@@ -1,37 +1,4 @@
-# import matplotlib.pyplot as plt
-# import random as rd
-#
-# #constantes
-# taille = 100
-#
-# #etats
-# arbre = 0
-# feu = 1
-# vide = 2
-#
-# #matrice foret
-# foret = [[0 for i in range(taille)] for j in range(taille)]
-#
-# #init feu
-# start = (rd.randint(0,taille-1), rd.randint(0,taille-1))
-# foret[start[0]][start[1]] = feu
-#
-# #regles de propagation
-# for i in range(taille):
-#     for j in range(taille):
-#         if foret[i][j] == feu:
-#             foret[i][j+1] = feu
-#             foret[i+1][j] = feu
-#             foret[i][j-1] = feu
-#             foret[i-1][j] = feu
-#             foret[i+1][j+1] = feu
-#             foret[i-1][j-1] = feu
-#             foret[i-1][j+1] = feu
-#             foret[i+1][j-1] = feu
-#
-# #affichage
-
-
+from math import sin, cos, pi
 import random as rd
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -44,9 +11,13 @@ feu = 2
 # constantes
 taille = 100
 frames = 200
-fire_prob = 0.72
+vent = True
+rad = pi # entre 0 et 2*pi
+prob_max = 0.68
+prob_min = 0.3
+unit_list = [(1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1), (0,-1), (1,-1)]
+
 interval = 75
-density = 0.9 #still to do
 
 # init foret
 foret = []
@@ -58,17 +29,35 @@ start = (rd.randint(0,taille-1), rd.randint(0,taille-1))
 foret[1][start[0]][start[1]] = feu
 
 # regles de propagation
+def f(x):
+    if vent:
+        nx = x - rad
+        return prob_max*(sin(nx) + 1)/2
+    else:
+        return prob_max
+
+def get_prob_list():
+    prob_list = [0]*8
+    for i in range(8):
+        prob_list[i] = f(i*pi/4)
+
+    return prob_list
+
+prob_list = get_prob_list();
+print(prob_list);
+
+
 def propagation(k, i, j):
     global foret, frames
     if foret[k][i][j] == feu:
         foret[k+1][i][j] = vide
-        for l in range(-1, 2):
-            for m in range(-1, 2):
-                (ni, nj) = (i+l, j+m)
-                if(ni < taille and ni >= 0 and nj < taille and nj >= 0):
-                    if(foret[k+1][i+l][j+m] == arbre):
-                        if(rd.random() > fire_prob):
-                            foret[k+1][i+l][j+m] = feu
+        for n in range(8):
+            (l,m) = unit_list[n]
+            (ni, nj) = (i+l, j+m)
+            if(ni < taille and ni >= 0 and nj < taille and nj >= 0):
+                if(foret[k+1][i+l][j+m] == arbre):
+                    if(rd.random() < prob_list[n]):
+                        foret[k+1][i+l][j+m] = feu
     elif(foret[k][i][j] == vide):
         foret[k+1][i][j] = vide
 
@@ -79,7 +68,7 @@ for k in range(frames-1):
 
 # affichage
 fig = plt.figure()
-im = plt.imshow(foret[1], animated=True, vmin = 0, vmax = 2)
+im = plt.imshow(foret[0], animated=True, vmin = 0, vmax = 2)
 
 n = 0
 def updatefig(*args):
