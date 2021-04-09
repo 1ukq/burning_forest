@@ -11,13 +11,12 @@ feu = 2
 # constantes
 taille = 100
 frames = 200
+interval = 75
 vent = True
 rad = pi # entre 0 et 2*pi
 prob_max = 0.68
-prob_min = 0.3
+prob_min = 0.3 # prob_min < prob_max
 unit_list = [(1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1), (0,-1), (1,-1)]
-
-interval = 75
 
 # init foret
 foret = []
@@ -32,7 +31,7 @@ foret[1][start[0]][start[1]] = feu
 def f(x):
     if vent:
         nx = x - rad
-        return prob_max*(sin(nx) + 1)/2
+        return (prob_max-prob_min)*((sin(nx) + 1)/2 + prob_min)
     else:
         return prob_max
 
