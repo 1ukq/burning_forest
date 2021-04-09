@@ -14,6 +14,7 @@ frames = 200
 interval = 75
 vent = True
 rad = pi # entre 0 et 2*pi
+prob = 0.68
 prob_max = 0.68
 prob_min = 0.3 # prob_min < prob_max
 unit_list = [(1,0), (1,1), (0,1), (-1,1), (-1,0), (-1,-1), (0,-1), (1,-1)]
@@ -33,7 +34,7 @@ def f(x):
         nx = x - rad
         return (prob_max-prob_min)*((sin(nx) + 1)/2 + prob_min)
     else:
-        return prob_max
+        return 1-prob
 
 def get_prob_list():
     prob_list = [0]*8
